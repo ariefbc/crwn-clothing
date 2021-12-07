@@ -12,42 +12,41 @@ import CheckoutPage from "./pages/checkout/checkout.component";
 
 import Header from "./components/header/header.component";
 
-import {
-  auth,
-  createUserProfileDocument,
-  // addCollectionAndDocuments, <--- addCollectionAndDocuments to insert collection data to firebase, 1 time only
-} from "./firebase/firebase.utils";
+// import {
+//   auth,
+//   createUserProfileDocument,
+//   // addCollectionAndDocuments, <--- addCollectionAndDocuments to insert collection data to firebase, 1 time only
+// } from "./firebase/firebase.utils";
 
-import { setCurrentUser } from "./redux/user/user.actions";
+// import { setCurrentUser } from "./redux/user/user.actions";
 import { selectCurrentUser } from "./redux/user/user.selectors";
 // import { selectCollectionsForPreview } from "./redux/shop/shop.selectors"; <--- selectCollectionsForPreview to insert collection data to firebase, 1 time only
+import { checkUserSession } from "./redux/user/user.actions";
 
 class App extends React.Component {
   unsubscribeFromAuth = null;
 
   componentDidMount() {
+    const { checkUserSession } = this.props;
+    checkUserSession();
     // const { setCurrentUser, collectionsArray } = this.props; // <--- addCollectionsArray to insert collection data to firebase, 1 time only
-
-    const { setCurrentUser } = this.props;
-
-    this.unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
-      if (userAuth) {
-        const userRef = await createUserProfileDocument(userAuth);
-
-        userRef.onSnapshot((snapShot) => {
-          setCurrentUser({
-            id: snapShot.id,
-            ...snapShot.data(),
-          });
-        });
-      }
-
-      setCurrentUser(userAuth);
-      // addCollectionAndDocuments(
-      //   "collections",
-      //   collectionsArray.map(({ title, items }) => ({ title, items }))
-      // ); <--- addCollectionAndDocuments to insert collection data to firebase, 1 time only
-    });
+    // const { setCurrentUser } = this.props;
+    // this.unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
+    //   if (userAuth) {
+    //     const userRef = await createUserProfileDocument(userAuth);
+    //     userRef.onSnapshot((snapShot) => {
+    //       setCurrentUser({
+    //         id: snapShot.id,
+    //         ...snapShot.data(),
+    //       });
+    //     });
+    //   }
+    //   setCurrentUser(userAuth);
+    //   // addCollectionAndDocuments(
+    //   //   "collections",
+    //   //   collectionsArray.map(({ title, items }) => ({ title, items }))
+    //   // ); <--- addCollectionAndDocuments to insert collection data to firebase, 1 time only
+    // });
   }
 
   componentWillUnmount() {
@@ -85,7 +84,7 @@ const mapStateToProps = createStructuredSelector({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  setCurrentUser: (user) => dispatch(setCurrentUser(user)),
+  checkUserSession: () => dispatch(checkUserSession()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
